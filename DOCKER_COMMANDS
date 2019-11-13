@@ -1,0 +1,33 @@
+
+
+
+docker run -d -v data:/data -v mongod.conf:/etc/mongo.conf -p 27017:27017 mongo
+docker run --name mongo -p 27017:27017 -v data:/data -v ./mongo-conf/mongod.conf:/etc/mongod.conf mongo -f /etc/mongod.conf
+
+docker run --name mongo -p 27017:27017 -v '/Users/julian/Documents/Workspace/water/water-mongodb/data:/data' -v '/Users/julian/Documents/Workspace/water/water-mongodb/mongo-conf:/etc' mongo -f /etc/mongod.conf
+
+
+docker stop $(docker ps -a -q)
+
+
+docker rm $(docker ps -a -q)
+
+docker-compose up --build
+docker-compose down
+
+
+docker exec -it app /bin/bash
+> node ./_tools/data/injest
+
+docker exec -it mongo /bin/bash
+
+> mongo
+> use water
+> db.plots.find({})
+> db.plots.drop()
+
+
+to restart at line
+
+- log into app
+- run START_AT=<line to start at> DOCKER=1 node ./_tools/data/injest

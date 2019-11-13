@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    GROW Water Planner - A water management tool for small scale growers
+  </title>
+  <meta name="viewport" content="initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="description"
+    content="Use this tool to find out how much water your plants will need over the coming months, based on your location. (European locations only)" />
+  <meta name="keywords" content="irrigation, allotment watering, crop watering, water management, watering advice" />
+  <link href="styles.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+  <header class="global-header">
+    <a href="//growobservatory.org" aria-label="Back to Grow Observatory" title="Back to GROW Observatory"
+      class="global-header__nav__link global-header__nav__link--back-to-link">
+      <svg class="global-header__nav__link__icon" viewBox="0 0 48 48">
+        <path fill="currentColor" d="M42 22H13.66l7.17-7.17L18 12 6 24l12 12 2.83-2.83L13.66 26H42z"></path>
+      </svg><span><span class="u-hide-mobile">Back</span><span class="u-hide-tablet">to GROW Observatory</span></span>
+    </a>
+    <a href="/" class="logo-link" aria-current="page">
+      <img class="logo-link__image" src="//growobservatory.org/images/logos/single-line.png" alt="GROW Observatory"
+        title="Back to the home page" />
+    </a>
+    <a href="//knowledge.growobservatory.org/knowledge-base/about-the-grow-water-planner/"
+      class="global-header__nav__link">About</a>
+  </header>
+
+  <div class="content-container">
+    <div class="wizard">
+      <div id="step-0" class="wizard__step wizard__step--0" role="banner">
+        <h1 class="wizard__step__heading wizard__step__heading--level0">
+          Water Planner
+        </h1>
+        <p>
+          Find out how much water your plants will need over the coming
+          months, based on your location
+        </p>
+        <button aria-controls="step-1" onclick="showWizardStep('step-1',event)" class="button button--cta">
+          Start
+        </button>
+      </div>
+      <form id="step-1" class="wizard__step wizard__step--1" aria-hidden="true">
+        <div class="wizard__step__body">
+          <div class="wizard__step__content">
+            <div class="form-controls form-controls--narrow">
+              <label for="pac-input" class="label">Select your growing location</label>
+              <input id="pac-input" class="input input--text" type="text"
+                placeholder="Search for your growing location..." />
+              <div id="map"></div>
+            </div>
+            <div class="form-controls form-controls--narrow">
+              <label for="plot-size" class="label">Enter your plot size</label>
+              <div id="plot-size" class="form-controls--inline">
+                <label for="plot-length" class="label label--inline">
+                  <span class="label__text">Plot Length (metres)</span>
+                  <input id="plot-length" class="input input--text" type="number" step="0.5" placeholder="0.5" value="1"
+                    name="plot-length" min="0" /></label>
+                <label for="plot-width" class="label label--inline">
+                  <span class="label__text">Plot Width (metres)</span>
+                  <input id="plot-width" class="input input--text" type="number" step="0.5" placeholder="0.5" value="1"
+                    name="plot-width" min="0" />
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="wizard__step__controls">
+            <button type="button" class="button button--cta button--block" id="calculate" aria-controls="step-4"
+              disabled>
+              Calculate
+            </button>
+          </div>
+        </div>
+      </form>
+      <div id="step-3" class="wizard__step" aria-hidden="true">
+        <div class="wizard__step__body">
+          <div id="results" class="results">
+            <p id="summary-message" class="results__message">
+              For each month, in addition to rainfall 🌧️ your plot will need
+              (in litres)*:
+            </p>
+            <aside class="wizard__step__footnote text-center">
+              🌍Location: <span data-location-text="true"></span>
+              <div>🚜 Plot Size: <span data-plotsize-text="true"></span></div>
+            </aside>
+            <div id="form" class="result__controls">
+              <div class="input-controls">
+                <input id="dry-weather" type="radio" name="SPEICLASS" value="D" onchange="selectSpeiClass(this)" />
+                <label for="dry-weather" class="input-control input-control--radio-label">Dry Year</label>
+                <input id="normal-weather" type="radio" name="SPEICLASS" value="N" onchange="selectSpeiClass(this)"
+                  checked />
+                <label for="normal-weather" class="input-control input-control--radio-label">Avg. Year</label>
+                <input id="wet-weather" type="radio" name="SPEICLASS" value="W" onchange="selectSpeiClass(this)" />
+                <label for="wet-weather" class="input-control input-control--radio-label">Wet Year</label>
+              </div>
+              <div class="hidden"">
+                <label for=" STONES">Stones</label>
+                <input type="radio" name="STONES" value="1.00000" onchange="selectStones(this)" checked />
+                <input type="radio" name="STONES" value="2.00000" onchange="selectStones(this)" />
+                <input type="radio" name="STONES" value="3.00000" onchange="selectStones(this)" />
+              </div>
+            </div>
+            <ol class="results__items" aria-describedby="summary-message">
+              <li id="jan" class="results__item results__item--jan">
+                <abbr class="results__item__month" title="January">Jan</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="feb" class="results__item results__item--feb">
+                <abbr class="results__item__month" title="February">Feb</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="mar" class="results__item results__item--mar">
+                <abbr class="results__item__month" title="March">Mar</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="apr" class="results__item results__item--apr">
+                <abbr class="results__item__month" title="April">Apr</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="may" class="results__item results__item--may">
+                <abbr class="results__item__month" title="May">May</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="jun" class="results__item results__item--jun">
+                <abbr class="results__item__month" title="June">Jun</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="jul" class="results__item results__item--jul">
+                <abbr class="results__item__month" title="July">Jul</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="aug" class="results__item results__item--aug">
+                <abbr class="results__item__month" title="August">Aug</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="sep" class="results__item results__item--sep">
+                <abbr class="results__item__month" title="September">Sep</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="oct" class="results__item results__item--oct">
+                <abbr class="results__item__month" title="October">Oct</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="nov" class="results__item results__item--nov">
+                <abbr class="results__item__month" title="November">Nov</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+              <li id="dec" class="results__item results__item--dec">
+                <abbr class="results__item__month" title="December">Dec</abbr>
+                <span class="results__item__irrigation"></span>
+              </li>
+            </ol>
+            <a href="/" class="button button--cta button--block">
+              Re-calculate
+            </a>
+            <small class="results__smallprint">* Results based on a free-draining soil with a coarse texture e.g. sandy
+              soils</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="page-footer">
+    <div class="page-footer__content">
+      <p>
+        <a href="//growobservatory.org/policies-and-terms">Data Governance Policy, Privacy Policy, Terms &amp;
+          Conditions</a>
+      </p>
+      <div class="media">
+        <div class="media__image">
+          <img src="https://growobservatory.org/images/flag-of-europe.svg" alt="" />
+        </div>
+        <div class="media__body">
+          <small>This project has received funding from the European Union's
+            Horizon 2020 research and innovation programme under grant
+            agreement No 690199.</small>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script type="text/javascript" src="water.js"></script>
+  <script>
+    var w = window.water;
+    for (var key in w) {
+      if (w.hasOwnProperty(key)) {
+        window[key] = w[key];
+      }
+    }
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUvDi2E19cN_9PsKBPtx8B1_2D7j9iiAs&callback=initMap&libraries=places"
+    type="text/javascript"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Karla|Montserrat&display=swap" rel="stylesheet" />
+  <script type="text/javascript" src="lib/water.js"></script>
+</body>
+
+</html>
